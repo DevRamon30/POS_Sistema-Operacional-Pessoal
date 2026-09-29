@@ -10,6 +10,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { QUADRANT_COLORS, STATUS_LABELS } from './constants';
 import { CalendarIcon, Clock, Play, CheckCircle2 } from 'lucide-react';
+import { parseLocalTaskDate } from '@/lib/task-schedule';
 
 const COLUMNS: TaskStatus[] = ['INBOX', 'NEXT_ACTION', 'IN_PROGRESS', 'DONE'];
 
@@ -104,7 +105,7 @@ export function KanbanBoard() {
                                   {task.dueDate && (
                                     <Badge variant="outline" className="text-slate-300 bg-black/40 border-white/10 text-[10px] hover:bg-black/60 shadow-inner">
                                       <CalendarIcon className="w-3 h-3 mr-1 text-secondary" />
-                                      {format(new Date(task.dueDate), "dd MMM", { locale: ptBR })}
+                                      {format(parseLocalTaskDate(task.dueDate), "dd MMM", { locale: ptBR })}
                                     </Badge>
                                   )}
 

@@ -87,6 +87,8 @@ export const useStore = create<AppState>()(
                 title: targetTask.title,
                 status: newStatus,
                 date: targetTask.dueDate,
+                startTime: targetTask.startTime,
+                endTime: targetTask.endTime,
                 quadrant: targetTask.quadrant,
                 pomodorosEstimated: targetTask.pomodorosEstimated,
                 pomodorosDone: targetTask.pomodorosDone,

@@ -19,6 +19,8 @@ export interface Task {
   status: TaskStatus;
   quadrant: EisenhowerQuadrant | null;
   dueDate: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
   projectId: string | null;
   pomodorosEstimated: number;
   pomodorosDone: number;

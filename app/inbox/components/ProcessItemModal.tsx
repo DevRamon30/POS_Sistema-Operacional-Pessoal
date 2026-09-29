@@ -12,6 +12,7 @@ import { InboxItem, EisenhowerQuadrant } from '@/lib/types';
 import { useStore } from '@/lib/store';
 import { Sparkles, Loader2, Check } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { parseScheduleFromText } from '@/lib/task-schedule';
 
 interface ProcessItemModalProps {
   item: InboxItem | null;
@@ -66,10 +67,11 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
       const breakdownData = await breakdownRes.json();
       const parsedTask = parseRes.ok ? await parseRes.json() : null;
       const parsedSchedule = parsedTask?.result;
+      const explicitSchedule = parseScheduleFromText(item.title);
       setSchedule({
-        date: parsedSchedule?.date || null,
-        startTime: parsedSchedule?.startTime || null,
-        endTime: parsedSchedule?.endTime || null,
+        date: explicitSchedule.date ?? parsedSchedule?.date ?? null,
+        startTime: explicitSchedule.startTime ?? parsedSchedule?.startTime ?? null,
+        endTime: explicitSchedule.endTime ?? parsedSchedule?.endTime ?? null,
         description: parsedSchedule?.description || null,
         priority: parsedSchedule?.priority || null,
       });
@@ -121,6 +123,8 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
         status: 'NEXT_ACTION',
         quadrant: quadrant,
         dueDate: schedule.date,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
         projectId: null,
         pomodorosEstimated: t.pomodorosEstimated,
         pomodorosDone: 0,

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import { parseScheduleFromText } from '@/lib/task-schedule';
 
 export function MagicAiInput() {
   const [text, setText] = useState('');
@@ -31,8 +32,15 @@ export function MagicAiInput() {
       if (!aiRes.ok) throw new Error(aiData.error || 'Erro na IA');
 
       const taskData = aiData.result;
+      const explicitSchedule = parseScheduleFromText(text);
+      const schedule = {
+        date: explicitSchedule.date ?? taskData.date ?? null,
+        startTime: explicitSchedule.startTime ?? taskData.startTime ?? null,
+        endTime: explicitSchedule.endTime ?? taskData.endTime ?? null,
+      };
       const notionTask = {
         ...taskData,
+        ...schedule,
         status: 'NEXT_ACTION',
         quadrant: taskData.priority === 'ALTA' ? 'URGENTE_IMPORTANTE' : 'IMPORTANTE_NAO_URGENTE',
         pomodorosEstimated: 1,
@@ -59,7 +67,9 @@ export function MagicAiInput() {
         title: taskData.title || text,
         status: 'NEXT_ACTION',
         quadrant: taskData.priority === 'ALTA' ? 'URGENTE_IMPORTANTE' : 'IMPORTANTE_NAO_URGENTE', // mapeamento básico
-        dueDate: taskData.date || null,
+        dueDate: schedule.date,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
         projectId: null,
         pomodorosEstimated: 1,
         pomodorosDone: 0,

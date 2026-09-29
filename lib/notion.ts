@@ -63,13 +63,14 @@ export async function createNotionTask(task: TaskData) {
   // Se houver data
   if (scheduledDate) {
     let dateStr = scheduledDate;
+    const datePart = scheduledDate.slice(0, 10);
     if (task.startTime) {
-       dateStr = `${scheduledDate}T${task.startTime}:00`;
+       dateStr = `${datePart}T${task.startTime}:00-03:00`;
     }
     properties.Data = {
       date: {
         start: dateStr,
-        ...(task.endTime && { end: `${scheduledDate}T${task.endTime}:00` })
+        ...(task.endTime && { end: `${datePart}T${task.endTime}:00-03:00` })
       }
     };
   }

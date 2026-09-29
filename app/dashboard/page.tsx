@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { parseLocalTaskDate } from '@/lib/task-schedule';
 
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -243,7 +244,7 @@ export default function DashboardPage() {
         label: t.title,
         badge: STATUS_LABEL[t.status] ?? t.status,
         badgeColor: STATUS_COLOR[t.status] ?? '',
-        note: t.dueDate ? format(new Date(t.dueDate), 'dd/MM', { locale: ptBR }) : undefined,
+        note: t.dueDate ? format(parseLocalTaskDate(t.dueDate), 'dd/MM', { locale: ptBR }) : undefined,
       }));
   }, [selectedQuadrant, tasks]);
 
@@ -611,7 +612,7 @@ export default function DashboardPage() {
                   {p.dueDate && (
                     <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                       <Calendar className="w-3 h-3" />
-                      {format(new Date(p.dueDate), "d 'de' MMM", { locale: ptBR })}
+                      {format(parseLocalTaskDate(p.dueDate), "d 'de' MMM", { locale: ptBR })}
                     </p>
                   )}
                 </CardHeader>
