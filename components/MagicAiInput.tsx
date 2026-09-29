@@ -31,12 +31,19 @@ export function MagicAiInput() {
       if (!aiRes.ok) throw new Error(aiData.error || 'Erro na IA');
 
       const taskData = aiData.result;
+      const notionTask = {
+        ...taskData,
+        status: 'NEXT_ACTION',
+        quadrant: taskData.priority === 'ALTA' ? 'URGENTE_IMPORTANTE' : 'IMPORTANTE_NAO_URGENTE',
+        pomodorosEstimated: 1,
+        pomodorosDone: 0,
+      };
       
       // 2. Salvar no Notion
       const notionRes = await fetch('/api/tasks/notion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(taskData),
+        body: JSON.stringify(notionTask),
       });
 
       let notionId: string | null = null;

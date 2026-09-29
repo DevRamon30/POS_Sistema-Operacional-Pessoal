@@ -9,10 +9,15 @@ export interface TaskData {
   title: string;
   status?: TaskStatus;
   date?: string | null;
+  dueDate?: string | null;
   startTime?: string | null;
   endTime?: string | null;
   description?: string | null;
   priority?: string | null;
+  quadrant?: string | null;
+  pomodorosEstimated?: number | null;
+  pomodorosDone?: number | null;
+  projectName?: string | null;
 }
 
 export function mapStatusToNotion(status?: TaskStatus | string): string {
@@ -33,6 +38,10 @@ export async function createNotionTask(task: TaskData) {
     throw new Error('NOTION_DATABASE_ID não configurado');
   }
 
+  // A coluna Data do Notion nunca deve ficar vazia: sem prazo informado,
+  // usamos o instante do cadastro como data e hora de registro.
+  const scheduledDate = task.date ?? task.dueDate ?? new Date().toISOString();
+
   // Mapeamento básico para as propriedades do Notion
   const properties: Record<string, unknown> = {
     Nome: {
@@ -52,37 +61,55 @@ export async function createNotionTask(task: TaskData) {
   };
 
   // Se houver data
-  if (task.date) {
-    let dateStr = task.date;
+  if (scheduledDate) {
+    let dateStr = scheduledDate;
     if (task.startTime) {
-       dateStr = `${task.date}T${task.startTime}:00`;
+       dateStr = `${scheduledDate}T${task.startTime}:00`;
     }
     properties.Data = {
       date: {
         start: dateStr,
-        ...(task.endTime && { end: `${task.date}T${task.endTime}:00` })
+        ...(task.endTime && { end: `${scheduledDate}T${task.endTime}:00` })
       }
     };
   }
 
   // Se houver descrição, adicionamos como conteúdo da página
-  const children = [];
-  if (task.description) {
-    children.push({
+  const detailLines = [
+    task.description && `Detalhes: ${task.description}`,
+    task.priority && `Prioridade: ${task.priority}`,
+    task.quadrant && `Quadrante: ${task.quadrant.replace(/_/g, ' ')}`,
+    typeof task.pomodorosEstimated === 'number' && `Pomodoros estimados: ${task.pomodorosEstimated}`,
+    typeof task.pomodorosDone === 'number' && `Pomodoros realizados: ${task.pomodorosDone}`,
+    task.projectName && `Projeto: ${task.projectName}`,
+  ].filter((line): line is string => Boolean(line));
+
+  const registeredAt = new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+    timeZone: 'America/Fortaleza',
+  }).format(new Date());
+
+  const children = [
+    ...detailLines.map((line) => ({
+      object: 'block',
+      type: 'bulleted_list_item',
+      bulleted_list_item: {
+        rich_text: [{ type: 'text', text: { content: line } }],
+      },
+    })),
+    {
       object: 'block',
       type: 'paragraph',
       paragraph: {
-        rich_text: [
-          {
-            type: 'text',
-            text: {
-              content: task.description,
-            },
-          },
-        ],
+        rich_text: [{
+          type: 'text',
+          text: { content: `Registrada no POS em ${registeredAt}` },
+          annotations: { italic: true, color: 'gray' },
+        }],
       },
-    });
-  }
+    },
+  ];
 
   try {
     const response = await notion.pages.create({

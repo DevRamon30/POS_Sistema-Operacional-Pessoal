@@ -19,10 +19,21 @@ interface ProcessItemModalProps {
   onClose: () => void;
 }
 
+interface TaskSchedule {
+  date: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  description: string | null;
+  priority: string | null;
+}
+
 export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProps) {
   const [loading, setLoading] = useState(false);
   const [tasks, setTasks] = useState<{ title: string; pomodorosEstimated: number }[]>([]);
   const [quadrant, setQuadrant] = useState<EisenhowerQuadrant | null>(null);
+  const [schedule, setSchedule] = useState<TaskSchedule>({
+    date: null, startTime: null, endTime: null, description: null, priority: null,
+  });
   const [processed, setProcessed] = useState(false);
 
   const { addTask, removeInboxItem } = useStore();
@@ -31,7 +42,7 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
     if (!item) return;
     setLoading(true);
     try {
-      const [classifyRes, breakdownRes] = await Promise.all([
+      const [classifyRes, breakdownRes, parseRes] = await Promise.all([
         fetch('/api/ai', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -41,13 +52,27 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mode: 'breakdown', title: item.title }),
-        })
+        }),
+        fetch('/api/ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'parse-task', payload: item.title }),
+        }),
       ]);
 
       const classifyData = await classifyRes.json();
       setQuadrant(classifyData.result?.quadrant || 'NENHUM');
 
       const breakdownData = await breakdownRes.json();
+      const parsedTask = parseRes.ok ? await parseRes.json() : null;
+      const parsedSchedule = parsedTask?.result;
+      setSchedule({
+        date: parsedSchedule?.date || null,
+        startTime: parsedSchedule?.startTime || null,
+        endTime: parsedSchedule?.endTime || null,
+        description: parsedSchedule?.description || null,
+        priority: parsedSchedule?.priority || null,
+      });
       
       const subtasks = breakdownData.result?.subtasks || [item.title];
       setTasks(subtasks.map((t: string) => ({ title: t, pomodorosEstimated: 1 })));
@@ -73,6 +98,14 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
           body: JSON.stringify({
             title: t.title,
             status: 'NEXT_ACTION',
+            date: schedule.date,
+            startTime: schedule.startTime,
+            endTime: schedule.endTime,
+            description: schedule.description,
+            priority: schedule.priority,
+            quadrant,
+            pomodorosEstimated: t.pomodorosEstimated,
+            pomodorosDone: 0,
           }),
         });
         if (res.ok) {
@@ -87,7 +120,7 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
         title: t.title,
         status: 'NEXT_ACTION',
         quadrant: quadrant,
-        dueDate: null,
+        dueDate: schedule.date,
         projectId: null,
         pomodorosEstimated: t.pomodorosEstimated,
         pomodorosDone: 0,
@@ -105,6 +138,7 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
     setProcessed(false);
     setTasks([]);
     setQuadrant(null);
+    setSchedule({ date: null, startTime: null, endTime: null, description: null, priority: null });
     onClose();
   };
 
@@ -142,6 +176,34 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
                 <div className="p-3 bg-black/20 border border-white/5 rounded-md text-sm font-bold text-white shadow-inner">
                   {quadrant?.replace(/_/g, ' ')}
                 </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-slate-300 mb-2">Agendamento:</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  <Input
+                    type="date"
+                    value={schedule.date || ''}
+                    onChange={(e) => setSchedule((current) => ({ ...current, date: e.target.value || null }))}
+                    className="bg-black/20 border-white/10 text-white focus-visible:ring-primary/50 [color-scheme:dark]"
+                    aria-label="Data da tarefa"
+                  />
+                  <Input
+                    type="time"
+                    value={schedule.startTime || ''}
+                    onChange={(e) => setSchedule((current) => ({ ...current, startTime: e.target.value || null }))}
+                    className="bg-black/20 border-white/10 text-white focus-visible:ring-primary/50 [color-scheme:dark]"
+                    aria-label="Hora de início"
+                  />
+                  <Input
+                    type="time"
+                    value={schedule.endTime || ''}
+                    onChange={(e) => setSchedule((current) => ({ ...current, endTime: e.target.value || null }))}
+                    className="bg-black/20 border-white/10 text-white focus-visible:ring-primary/50 [color-scheme:dark]"
+                    aria-label="Hora de término"
+                  />
+                </div>
+                <p className="text-[11px] text-slate-500 mt-2">Data, início e término extraídos do item original. Ajuste antes de confirmar, se necessário.</p>
               </div>
               
               <div>

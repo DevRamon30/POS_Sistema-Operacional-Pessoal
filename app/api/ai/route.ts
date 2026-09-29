@@ -18,7 +18,10 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = PROMPTS[mode as keyof typeof PROMPTS];
     const userMessage = typeof payload === 'string' ? payload : JSON.stringify(payload);
-    const fullPrompt = `${systemPrompt}\n\nDados:\n${userMessage}`;
+    const currentDateContext = mode === 'parse-task'
+      ? `\n\nData atual (America/Fortaleza): ${new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Fortaleza' }).format(new Date())}`
+      : '';
+    const fullPrompt = `${systemPrompt}${currentDateContext}\n\nDados:\n${userMessage}`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3.6-flash',
