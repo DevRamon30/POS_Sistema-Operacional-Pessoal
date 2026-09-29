@@ -3,9 +3,11 @@
 import { Sidebar } from './Sidebar';
 import { PomodoroTimer } from '@/components/PomodoroTimer';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -13,6 +15,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!mounted) {
     return <div className="flex h-screen bg-background overflow-hidden"></div>;
+  }
+
+  if (pathname === '/') {
+    return <>{children}</>;
   }
 
   return (

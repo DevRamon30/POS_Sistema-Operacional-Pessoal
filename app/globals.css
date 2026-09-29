@@ -100,4 +100,22 @@
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
   }
+
+  @keyframes welcome-orbit {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes welcome-float {
+    0%, 100% { transform: translateY(0); opacity: 0.7; }
+    50% { transform: translateY(-7px); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-\[welcome-orbit_10s_linear_infinite\],
+    .animate-\[welcome-orbit_14s_linear_infinite_reverse\],
+    .animate-\[welcome-float_3s_ease-in-out_infinite\],
+    .animate-\[welcome-float_3\.8s_ease-in-out_infinite_0\.5s\] {
+      animation: none;
+    }
+  }
 }
