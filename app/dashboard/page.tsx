@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { useState, useMemo } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell, CartesianGrid
 } from 'recharts';
 import {
@@ -26,6 +26,18 @@ const QUADRANT_COLORS: Record<string, string> = {
   URGENTE_NAO_IMPORTANTE:   '#fbbf24',
   NENHUM:                   '#64748b',
 };
+
+const QUADRANT_GRADIENTS: Record<string, [string, string]> = {
+  URGENTE_IMPORTANTE:       ['#fb7185', '#e11d48'],
+  IMPORTANTE_NAO_URGENTE:   ['#c4b5fd', '#7c3aed'],
+  URGENTE_NAO_IMPORTANTE:   ['#fde047', '#f59e0b'],
+  NENHUM:                   ['#60a5fa', '#475569'],
+};
+
+const TASK_COLORS = [
+  '#22d3ee', '#a78bfa', '#fbbf24', '#34d399', '#fb7185',
+  '#60a5fa', '#fb923c', '#e879f9', '#a3e635', '#818cf8',
+];
 
 const QUADRANT_LABELS: Record<string, string> = {
   URGENTE_IMPORTANTE:       'Faça Agora',
@@ -210,10 +222,11 @@ export default function DashboardPage() {
     })).filter(d => d.value > 0), [tasks]);
 
   const pomodoroData = useMemo(() =>
-    tasks.filter(t => t.pomodorosEstimated > 0 || t.pomodorosDone > 0).map(t => ({
+    tasks.filter(t => t.pomodorosEstimated > 0 || t.pomodorosDone > 0).map((t, index) => ({
       id: t.id,
       name: t.title.substring(0, 13) + (t.title.length > 13 ? '…' : ''),
       fullName: t.title,
+      color: TASK_COLORS[index % TASK_COLORS.length],
       Estimados: t.pomodorosEstimated,
       Realizados: t.pomodorosDone,
       status: t.status,
@@ -363,6 +376,17 @@ export default function DashboardPage() {
               <>
                 <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
+                  <defs>
+                    {quadrantData.map((entry) => {
+                      const [start, end] = QUADRANT_GRADIENTS[entry.key];
+                      return (
+                        <linearGradient key={entry.key} id={`quadrant-${entry.key}`} x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor={start} />
+                          <stop offset="100%" stopColor={end} />
+                        </linearGradient>
+                      );
+                    })}
+                  </defs>
                   <Pie
                     data={quadrantData}
                     cx="50%" cy="50%"
@@ -376,7 +400,7 @@ export default function DashboardPage() {
                   >
                     {quadrantData.map((entry, i) => (
                       <Cell
-                        key={`cell-${i}`} fill={entry.color}
+                        key={`cell-${i}`} fill={`url(#quadrant-${entry.key})`}
                         opacity={selectedQuadrant && selectedQuadrant !== entry.key ? 0.25 : 1}
                         className="transition-opacity duration-300"
                       />
@@ -428,7 +452,17 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="min-h-[280px]">
             {pomodoroData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={280}>
+              <>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1 pt-1 text-[10px] text-slate-500">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-sm bg-white/25" /> Estimado
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2.5 w-2.5 rounded-sm bg-white/90" /> Realizado
+                </span>
+                <span className="ml-auto text-slate-600">Cada cor representa uma tarefa</span>
+              </div>
+              <ResponsiveContainer width="100%" height={255}>
                 <BarChart
                   data={pomodoroData}
                   margin={{ top: 10, right: 20, left: -20, bottom: 5 }}
@@ -441,16 +475,6 @@ export default function DashboardPage() {
                   }}
                   className="cursor-pointer"
                 >
-                  <defs>
-                    <linearGradient id="estimatedGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#94a3b8" stopOpacity="0.55" />
-                      <stop offset="100%" stopColor="#475569" stopOpacity="0.22" />
-                    </linearGradient>
-                    <linearGradient id="completedGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#67e8f9" />
-                      <stop offset="100%" stopColor="#06b6d4" />
-                    </linearGradient>
-                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
                   <XAxis dataKey="name" fontSize={10} stroke="rgba(255,255,255,0.3)"
                     axisLine={false} tickLine={false} />
@@ -460,10 +484,13 @@ export default function DashboardPage() {
                     {...tooltipStyle}
                     content={({ active, payload }) => {
                       if (!active || !payload?.length) return null;
-                      const d = payload[0].payload as {fullName:string;Estimados:number;Realizados:number;efficiency:number};
+                      const d = payload[0].payload as {fullName:string;color:string;Estimados:number;Realizados:number;efficiency:number};
                       return (
                         <div style={tooltipStyle.contentStyle} className="p-3">
-                          <p className="font-semibold text-white mb-1.5 text-sm">{d.fullName}</p>
+                          <p className="font-semibold text-white mb-1.5 text-sm flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: d.color, boxShadow: `0 0 8px ${d.color}` }} />
+                            {d.fullName}
+                          </p>
                           <p className="text-slate-400 text-xs">🍅 Estimados: <span className="text-white">{d.Estimados}</span></p>
                           <p className="text-slate-400 text-xs">✅ Realizados: <span className="text-emerald-400">{d.Realizados}</span></p>
                           <p className="text-slate-400 text-xs mt-1">Eficiência: <span className={d.efficiency >= 100 ? 'text-emerald-400' : 'text-amber-400'}>{d.efficiency}%</span></p>
@@ -472,13 +499,33 @@ export default function DashboardPage() {
                       );
                     }}
                   />
-                  <Legend iconType="circle" wrapperStyle={{ fontSize: '11px', opacity: 0.7 }} />
-                  <Bar dataKey="Estimados" fill="url(#estimatedGradient)" radius={[7,7,2,2]}
-                    isAnimationActive animationDuration={1200} />
-                  <Bar dataKey="Realizados" fill="url(#completedGradient)" radius={[7,7,2,2]}
-                    isAnimationActive animationDuration={1200} />
+                  <Bar dataKey="Estimados" radius={[7,7,2,2]}
+                    isAnimationActive animationDuration={1200}>
+                    {pomodoroData.map((entry) => (
+                      <Cell
+                        key={`estimated-${entry.id}`}
+                        fill={entry.color}
+                        fillOpacity={selectedPomodoro && selectedPomodoro !== entry.id ? 0.1 : 0.38}
+                        stroke={entry.color}
+                        strokeOpacity={selectedPomodoro === entry.id ? 0.9 : 0.2}
+                      />
+                    ))}
+                  </Bar>
+                  <Bar dataKey="Realizados" radius={[7,7,2,2]}
+                    isAnimationActive animationDuration={1200}>
+                    {pomodoroData.map((entry) => (
+                      <Cell
+                        key={`completed-${entry.id}`}
+                        fill={entry.color}
+                        fillOpacity={selectedPomodoro && selectedPomodoro !== entry.id ? 0.18 : 1}
+                        stroke={entry.color}
+                        strokeOpacity={selectedPomodoro === entry.id ? 1 : 0.45}
+                      />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
+              </>
             ) : (
               <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-slate-600 gap-2">
                 <Zap className="w-10 h-10 opacity-30" />
