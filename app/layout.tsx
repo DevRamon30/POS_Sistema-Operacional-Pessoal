@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -12,6 +12,13 @@ const font = localFont({
 export const metadata: Metadata = {
   title: "POS App",
   description: "Sistema Operacional Pessoal",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#070c17",
 };
 
 export default function RootLayout({

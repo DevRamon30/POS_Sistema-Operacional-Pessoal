@@ -116,21 +116,21 @@ export default function ProjectsPage() {
   const projectTasks = selectedProject ? tasks.filter(t => t.projectId === selectedProject.id) : [];
 
   return (
-    <div className="p-8 h-full flex flex-col animate-in fade-in duration-500 overflow-y-auto">
-      <div className="flex items-center gap-4 mb-8">
+    <div className="p-4 sm:p-6 lg:p-8 min-h-full flex flex-col animate-in fade-in duration-500">
+      <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div className="p-3 bg-primary/20 text-primary rounded-xl shadow-[0_0_15px_rgba(191,247,255,0.2)]">
           <FolderGit2 className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-white drop-shadow-sm">Projetos</h1>
-          <p className="text-slate-400 mt-1">Gerencie missões, defina metas e acompanhe seu progresso.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-sm">Projetos</h1>
+          <p className="text-sm sm:text-base text-slate-400 mt-1">Gerencie missões, defina metas e acompanhe seu progresso.</p>
         </div>
       </div>
 
       {/* Formulário de Novo Projeto */}
       <div className="mb-8">
-        <form onSubmit={handleAddProject} className="flex flex-wrap md:flex-nowrap gap-4 items-end p-6 rounded-2xl bg-background/40 backdrop-blur-md border border-white/10 shadow-lg">
-          <div className="flex-1 min-w-[200px] space-y-2">
+        <form onSubmit={handleAddProject} className="flex flex-col gap-4 p-4 rounded-2xl bg-background/40 backdrop-blur-md border border-white/10 shadow-lg sm:p-6 md:flex-row md:items-end">
+          <div className="w-full flex-1 space-y-2 md:min-w-[200px]">
             <label className="text-sm font-medium text-slate-300">Nome do Projeto</label>
             <Input 
               value={newProjectName} 
@@ -148,7 +148,7 @@ export default function ProjectsPage() {
               className="bg-black/20 border-white/10 text-white focus-visible:ring-primary/50 [color-scheme:dark]"
             />
           </div>
-          <Button type="submit" disabled={!newProjectName.trim()} className="gap-2 bg-primary hover:bg-primary/90 text-slate-900 font-bold shadow-[0_0_15px_rgba(191,247,255,0.3)] transition-all hover:scale-105">
+          <Button type="submit" disabled={!newProjectName.trim()} className="w-full gap-2 bg-primary hover:bg-primary/90 text-slate-900 font-bold shadow-[0_0_15px_rgba(191,247,255,0.3)] transition-all hover:scale-105 md:w-auto">
             <Plus className="w-5 h-5" /> Iniciar Projeto
           </Button>
         </form>
@@ -232,11 +232,11 @@ export default function ProjectsPage() {
 
       {/* Modal de Detalhes do Projeto */}
       {selectedProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="relative w-full max-w-3xl max-h-[90vh] flex flex-col bg-background/95 border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 text-white">
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/70 backdrop-blur-md animate-in fade-in duration-300 sm:items-center sm:p-4">
+          <div className="relative w-full max-w-3xl max-h-[92dvh] flex flex-col bg-background/95 border border-white/10 rounded-t-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 text-white sm:max-h-[90vh] sm:rounded-2xl">
             
             {/* Header do Modal */}
-            <div className="p-6 border-b border-white/10 flex items-start justify-between bg-white/5">
+            <div className="p-4 sm:p-6 border-b border-white/10 flex items-start justify-between bg-white/5">
               <div className="flex-1 pr-4">
                 {isEditingProject ? (
                   <div className="space-y-3">
@@ -246,12 +246,12 @@ export default function ProjectsPage() {
                       className="bg-black/40 border-white/20 text-lg font-bold text-white"
                       placeholder="Nome do Projeto"
                     />
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:gap-3">
                       <Input 
                         type="date"
                         value={editDate}
                         onChange={e => setEditDate(e.target.value)}
-                        className="bg-black/40 border-white/20 text-xs text-white w-48 [color-scheme:dark]"
+                        className="w-full bg-black/40 border-white/20 text-xs text-white sm:w-48 [color-scheme:dark]"
                       />
                       <Button size="sm" onClick={handleSaveEditProject} className="bg-primary text-slate-900 font-bold gap-1">
                         <Check className="w-4 h-4" /> Salvar
@@ -264,7 +264,7 @@ export default function ProjectsPage() {
                 ) : (
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-2xl font-bold text-white">{selectedProject.name}</h2>
+                      <h2 className="break-words text-xl font-bold text-white sm:text-2xl">{selectedProject.name}</h2>
                       <button 
                         onClick={() => setIsEditingProject(true)}
                         className="p-1 hover:bg-white/10 rounded text-slate-400 hover:text-white transition-colors"
@@ -305,12 +305,12 @@ export default function ProjectsPage() {
             </div>
 
             {/* Barra de Progresso no Modal */}
-            <div className="px-6 py-4 bg-black/20 border-b border-white/5">
+            <div className="px-4 py-4 sm:px-6 bg-black/20 border-b border-white/5">
               {(() => {
                 const prog = getProjectProgress(selectedProject.id);
                 return (
                   <div>
-                    <div className="flex justify-between text-xs text-slate-300 font-medium mb-1.5">
+                    <div className="flex flex-col gap-1 text-xs text-slate-300 font-medium mb-2 sm:flex-row sm:justify-between">
                       <span>Progresso do Projeto</span>
                       <span className="font-bold text-primary">{prog.done} de {prog.total} tarefas concluídas ({prog.percentage}%)</span>
                     </div>
@@ -326,7 +326,7 @@ export default function ProjectsPage() {
             </div>
 
             {/* Conteúdo do Modal - Adicionar Tarefa & Lista de Tarefas */}
-            <div className="p-6 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
+            <div className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
               
               {/* Form Adicionar Tarefa no Projeto */}
               <form onSubmit={handleAddTaskToProject} className="p-4 bg-white/5 border border-white/10 rounded-xl space-y-3">
@@ -334,7 +334,7 @@ export default function ProjectsPage() {
                   <Plus className="w-4 h-4 text-primary" />
                   Adicionar Nova Tarefa a este Projeto
                 </h4>
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row">
                   <Input 
                     value={newTaskTitle}
                     onChange={e => setNewTaskTitle(e.target.value)}
@@ -344,14 +344,14 @@ export default function ProjectsPage() {
                   <select 
                     value={newTaskQuadrant}
                     onChange={e => setNewTaskQuadrant(e.target.value as EisenhowerQuadrant)}
-                    className="bg-black/30 border border-white/10 text-xs text-white rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    className="h-10 w-full bg-black/30 border border-white/10 text-xs text-white rounded-md px-3 focus:outline-none focus:ring-1 focus:ring-primary/50 sm:w-auto"
                   >
                     <option value="URGENTE_IMPORTANTE" className="bg-slate-900">Faça Agora (Urgente & Importante)</option>
                     <option value="IMPORTANTE_NAO_URGENTE" className="bg-slate-900">Agende (Importante)</option>
                     <option value="URGENTE_NAO_IMPORTANTE" className="bg-slate-900">Delegue (Urgente)</option>
                     <option value="NENHUM" className="bg-slate-900">Sem Classificação</option>
                   </select>
-                  <Button type="submit" disabled={!newTaskTitle.trim()} className="bg-primary hover:bg-primary/90 text-slate-900 font-bold">
+                  <Button type="submit" disabled={!newTaskTitle.trim()} className="w-full bg-primary hover:bg-primary/90 text-slate-900 font-bold sm:w-auto">
                     Adicionar
                   </Button>
                 </div>

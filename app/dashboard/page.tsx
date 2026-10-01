@@ -312,15 +312,15 @@ export default function DashboardPage() {
   // ─── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-6 lg:p-10 h-full flex flex-col overflow-y-auto scroll-smooth">
+    <div className="p-4 sm:p-6 lg:p-10 min-h-full flex flex-col scroll-smooth">
 
       {/* ── Header ── */}
-      <div className="flex items-center gap-4 mb-10 animate-in slide-in-from-top-4 duration-500">
+      <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-10 animate-in slide-in-from-top-4 duration-500">
         <div className="p-3.5 bg-cyan-500/20 text-cyan-400 rounded-2xl shadow-[0_0_20px_rgba(34,211,238,0.25)] border border-cyan-500/30">
           <LayoutDashboard className="w-7 h-7" />
         </div>
         <div>
-          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-white
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white
             drop-shadow-[0_0_10px_rgba(255,255,255,0.15)]">
             Command Center
           </h1>
@@ -331,7 +331,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── KPI Cards ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+      <div className="grid grid-cols-1 min-[390px]:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-10">
         <StatCard label="Taxa de Conclusão" value={completionRate} unit="%"
           sub={`${doneTasks} de ${totalTasks} tarefas concluídas`}
           color="primary" icon={<CheckCircle2 className="w-8 h-8" />} delay={0} />

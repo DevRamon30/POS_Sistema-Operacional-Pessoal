@@ -51,19 +51,19 @@ export default function HabitsPage() {
   };
 
   return (
-    <div className="p-8 h-full flex flex-col animate-in fade-in duration-500">
-      <div className="flex items-center gap-4 mb-8">
+    <div className="p-4 sm:p-6 lg:p-8 min-h-full flex flex-col animate-in fade-in duration-500">
+      <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div className="p-3 bg-secondary/20 text-secondary rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.2)]">
           <Flame className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-white drop-shadow-sm">Hábitos</h1>
-          <p className="text-slate-400 mt-1">Acompanhe suas rotinas e construa consistência.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-sm">Hábitos</h1>
+          <p className="text-sm sm:text-base text-slate-400 mt-1">Acompanhe suas rotinas e construa consistência.</p>
         </div>
       </div>
 
       <div className="mb-8">
-        <form onSubmit={handleAddHabit} className="flex gap-4 items-end p-6 rounded-2xl bg-background/40 backdrop-blur-md border border-white/10 shadow-lg">
+        <form onSubmit={handleAddHabit} className="flex flex-col gap-4 p-4 rounded-2xl bg-background/40 backdrop-blur-md border border-white/10 shadow-lg sm:p-6 md:flex-row md:items-end">
           <div className="flex-1 space-y-2">
             <label className="text-sm font-medium text-slate-300">Nome do Hábito</label>
             <Input 
@@ -84,7 +84,7 @@ export default function HabitsPage() {
               <option value="WEEKLY" className="bg-slate-900">Semanal</option>
             </select>
           </div>
-          <Button type="submit" className="gap-2 bg-secondary hover:bg-secondary/90 text-white font-bold shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all hover:scale-105">
+          <Button type="submit" className="w-full gap-2 bg-secondary hover:bg-secondary/90 text-white font-bold shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all hover:scale-105 md:w-auto">
             <Plus className="w-4 h-4" /> Adicionar
           </Button>
         </form>
@@ -113,8 +113,8 @@ export default function HabitsPage() {
               </CardHeader>
               <CardContent className="flex-1 flex flex-col justify-end">
                 
-                <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                  <div className="flex gap-1.5">
+                <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex justify-between gap-1 sm:justify-start sm:gap-1.5">
                     {last7Days.map((date) => {
                       const done = isCompleted(date);
                       return (

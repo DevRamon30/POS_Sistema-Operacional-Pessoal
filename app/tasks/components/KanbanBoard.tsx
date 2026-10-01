@@ -36,12 +36,12 @@ export function KanbanBoard() {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-6 h-full overflow-x-auto pb-4 custom-scrollbar">
+      <div className="flex w-full min-w-0 gap-4 sm:gap-6 h-full max-w-full overflow-x-auto pb-4 custom-scrollbar snap-x snap-mandatory overscroll-x-contain">
         {COLUMNS.map((statusId, colIndex) => {
           const columnTasks = tasks.filter((t) => t.status === statusId);
 
           return (
-            <div key={statusId} className="flex-shrink-0 w-80 flex flex-col bg-background/40 backdrop-blur-md rounded-2xl border border-white/5 shadow-xl animate-in fade-in duration-700" style={{ animationDelay: `${colIndex * 100}ms` }}>
+            <div key={statusId} className="flex-shrink-0 w-[calc(100vw-2rem)] max-w-sm sm:w-80 flex flex-col bg-background/40 backdrop-blur-md rounded-2xl border border-white/5 shadow-xl animate-in fade-in duration-700 snap-center" style={{ animationDelay: `${colIndex * 100}ms` }}>
               <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5 rounded-t-2xl">
                 <h3 className="font-bold text-white tracking-wide">{STATUS_LABELS[statusId]}</h3>
                 <span className="bg-black/40 text-slate-300 text-xs px-2.5 py-1 rounded-full border border-white/10 shadow-inner">

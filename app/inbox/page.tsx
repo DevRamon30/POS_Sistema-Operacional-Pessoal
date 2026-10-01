@@ -26,20 +26,20 @@ export default function InboxPage() {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto h-full flex flex-col animate-in fade-in duration-500">
-      <div className="flex items-center gap-4 mb-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto min-h-full flex flex-col animate-in fade-in duration-500">
+      <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div className="p-3 bg-primary/20 text-primary rounded-xl shadow-[0_0_15px_rgba(191,247,255,0.2)]">
           <InboxIcon className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-white drop-shadow-sm">Caixa de Entrada</h1>
-          <p className="text-slate-400 mt-1">Capture tudo o que está chamando sua atenção.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-sm">Caixa de Entrada</h1>
+          <p className="text-sm sm:text-base text-slate-400 mt-1">Capture tudo o que está chamando sua atenção.</p>
         </div>
       </div>
 
       <Card className="mb-8 border-white/10 bg-background/40 backdrop-blur-md shadow-lg">
-        <CardContent className="pt-6">
-          <form onSubmit={handleAdd} className="flex gap-3">
+        <CardContent className="p-4 sm:pt-6">
+          <form onSubmit={handleAdd} className="flex flex-col gap-3 sm:flex-row">
             <Input
               placeholder="O que está na sua mente?"
               value={inputValue}
@@ -47,7 +47,7 @@ export default function InboxPage() {
               className="flex-1 text-lg py-6 bg-black/20 border-white/10 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
               autoFocus
             />
-            <Button type="submit" size="lg" className="px-8 py-6 bg-primary hover:bg-primary/80 text-slate-900 font-bold shadow-[0_0_15px_rgba(191,247,255,0.3)] transition-all hover:scale-[1.02]">
+            <Button type="submit" size="lg" className="w-full px-8 py-6 bg-primary hover:bg-primary/80 text-slate-900 font-bold shadow-[0_0_15px_rgba(191,247,255,0.3)] transition-all hover:scale-[1.02] sm:w-auto">
               <Plus className="w-5 h-5 mr-2" />
               Adicionar
             </Button>
@@ -72,7 +72,7 @@ export default function InboxPage() {
             {inboxItems.map((item, i) => (
               <div 
                 key={item.id} 
-                className="group flex items-center justify-between p-4 bg-background/40 backdrop-blur-md border border-white/5 rounded-xl hover:border-primary/30 hover:bg-white/5 hover:shadow-[0_0_20px_rgba(191,247,255,0.05)] transition-all animate-in slide-in-from-bottom-4 fill-mode-both"
+                className="group flex flex-col items-stretch gap-3 p-4 bg-background/40 backdrop-blur-md border border-white/5 rounded-xl hover:border-primary/30 hover:bg-white/5 hover:shadow-[0_0_20px_rgba(191,247,255,0.05)] transition-all animate-in slide-in-from-bottom-4 fill-mode-both sm:flex-row sm:items-center sm:justify-between"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
                 <div>
@@ -84,7 +84,7 @@ export default function InboxPage() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="text-primary border-primary/30 bg-transparent hover:bg-primary/20 hover:text-primary transition-colors"
+                  className="w-full text-primary border-primary/30 bg-transparent hover:bg-primary/20 hover:text-primary transition-colors sm:w-auto"
                   onClick={() => setSelectedItem(item)}
                 >
                   <Sparkles className="w-4 h-4 mr-2 animate-pulse" />

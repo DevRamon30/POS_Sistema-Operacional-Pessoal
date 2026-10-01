@@ -17,7 +17,18 @@ export function Sidebar() {
   const pathname = usePathname();
   
   return (
-    <aside className="w-64 bg-slate-950/45 backdrop-blur-2xl text-slate-100 flex flex-col h-full border-r border-white/[0.07] z-20 shadow-[20px_0_60px_-40px_rgba(0,0,0,0.9)]">
+    <>
+    <header className="fixed inset-x-0 top-0 z-40 flex h-16 items-center border-b border-white/[0.07] bg-slate-950/90 px-4 backdrop-blur-2xl md:hidden">
+      <div className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-cyan-200/15 bg-gradient-to-br from-cyan-400/25 to-violet-500/25">
+        <Command className="h-5 w-5 text-cyan-300" />
+      </div>
+      <div className="ml-3">
+        <h1 className="text-base font-extrabold leading-none text-white">POS</h1>
+        <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500">Sistema Operacional Pessoal</p>
+      </div>
+    </header>
+
+    <aside className="hidden w-64 shrink-0 bg-slate-950/45 backdrop-blur-2xl text-slate-100 md:flex flex-col h-full border-r border-white/[0.07] z-20 shadow-[20px_0_60px_-40px_rgba(0,0,0,0.9)]">
       <div className="p-8 pb-7 flex items-center gap-3">
         <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400/25 via-cyan-500/15 to-violet-500/25 border border-cyan-200/15 shadow-[0_0_22px_rgba(34,211,238,0.16)]">
           <Command className="relative z-10 w-5 h-5 text-cyan-300" />
@@ -64,5 +75,22 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+
+    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-20 w-screen max-w-[100vw] overflow-hidden border-t border-white/10 bg-slate-950/95 px-1 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl md:hidden">
+      {navItems.map((item) => {
+        const isActive = pathname.startsWith(item.href);
+        return (
+          <Link key={item.name} href={item.href} className={cn(
+            "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-0.5 text-[9px] transition-colors min-[380px]:text-[10px]",
+            isActive ? "text-cyan-300" : "text-slate-500 active:text-white"
+          )}>
+            {isActive && <span className="absolute top-1 h-0.5 w-8 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.8)]" />}
+            <item.icon className={cn("h-5 w-5", isActive && "drop-shadow-[0_0_7px_rgba(34,211,238,0.7)]")} />
+            <span className="max-w-full truncate">{item.name === 'Caixa de Entrada' ? 'Entrada' : item.name}</span>
+          </Link>
+        );
+      })}
+    </nav>
+    </>
   );
 }

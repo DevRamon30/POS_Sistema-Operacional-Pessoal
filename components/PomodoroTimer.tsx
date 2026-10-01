@@ -70,7 +70,7 @@ export function PomodoroTimer() {
   const seconds = timeLeft % 60;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-24 right-4 z-40 md:bottom-6 md:right-6 md:z-50">
       {!isOpen && (
         <Button 
           onClick={() => setIsOpen(true)}
@@ -81,7 +81,7 @@ export function PomodoroTimer() {
       )}
 
       {isOpen && (
-        <Card className="w-80 bg-background/80 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(191,247,255,0.15)] animate-in slide-in-from-bottom-8 fade-in duration-300">
+        <Card className="w-[calc(100vw-2rem)] max-w-80 bg-background/95 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(191,247,255,0.15)] animate-in slide-in-from-bottom-8 fade-in duration-300">
           <div className="bg-white/5 border-b border-white/5 p-3 flex justify-between items-center rounded-t-lg">
             <div className="flex items-center gap-2 font-bold text-white">
               <Timer className="w-4 h-4 text-primary" />

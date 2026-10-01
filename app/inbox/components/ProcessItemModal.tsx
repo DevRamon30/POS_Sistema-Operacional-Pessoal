@@ -148,7 +148,7 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-white/10 text-white shadow-2xl">
+      <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-md bg-background/95 backdrop-blur-xl border-white/10 text-white shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Processar: {item?.title}</DialogTitle>
         </DialogHeader>
@@ -184,7 +184,7 @@ export function ProcessItemModal({ item, isOpen, onClose }: ProcessItemModalProp
 
               <div>
                 <h4 className="text-sm font-medium text-slate-300 mb-2">Agendamento:</h4>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   <Input
                     type="date"
                     value={schedule.date || ''}

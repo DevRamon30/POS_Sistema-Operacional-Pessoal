@@ -92,20 +92,20 @@ export function MagicAiInput() {
   };
 
   return (
-    <form onSubmit={handleProcess} className="relative w-full max-w-2xl mb-8 group">
+    <form onSubmit={handleProcess} className="relative w-full max-w-2xl mb-6 sm:mb-8 group">
       <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
-      <div className="relative flex items-center bg-black/60 border border-white/10 rounded-xl p-1 shadow-2xl backdrop-blur-sm">
+      <div className="relative flex flex-col gap-1.5 bg-black/60 border border-white/10 rounded-xl p-1.5 shadow-2xl backdrop-blur-sm sm:flex-row sm:items-center sm:gap-0 sm:p-1">
         <Input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Ex: Reunião do projeto POS sexta-feira às 14:00..."
-          className="flex-1 border-0 bg-transparent text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
+          className="min-h-11 flex-1 border-0 bg-transparent text-white placeholder:text-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 text-base"
           disabled={loading || success}
         />
         <Button 
           type="submit" 
           disabled={loading || success || !text.trim()} 
-          className="ml-2 bg-white/10 hover:bg-white/20 text-white border-0"
+          className="h-10 w-full bg-white/10 hover:bg-white/20 text-white border-0 sm:ml-2 sm:w-auto"
         >
           {loading ? (
             <Loader2 className="w-5 h-5 animate-spin text-primary" />

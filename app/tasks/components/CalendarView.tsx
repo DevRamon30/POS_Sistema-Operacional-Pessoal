@@ -28,17 +28,23 @@ export function CalendarView() {
   const end = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start, end });
   const leadingDays = Array.from({ length: getDay(start) });
+  const mobileDays = days
+    .map((day) => ({
+      day,
+      dayTasks: tasks.filter((task) => isSameDay(parseLocalTaskDate(task.dueDate!), day)),
+    }))
+    .filter(({ dayTasks }) => dayTasks.length > 0);
 
   return (
-    <Card className="bg-background/40 backdrop-blur-md border border-white/10 shadow-xl">
-      <CardHeader className="flex flex-row items-center justify-between gap-4">
+    <Card className="overflow-hidden bg-background/40 backdrop-blur-md border border-white/10 shadow-xl">
+      <CardHeader className="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <CardTitle className="text-2xl font-bold text-white capitalize drop-shadow-sm">
+          <CardTitle className="text-xl sm:text-2xl font-bold text-white capitalize drop-shadow-sm">
             {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
           </CardTitle>
           <p className="mt-1 text-xs text-slate-500">Navegue pelos meses para visualizar seus prazos.</p>
         </div>
-        <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-black/20 p-1">
+        <div className="flex items-center justify-between gap-1 rounded-xl border border-white/10 bg-black/20 p-1 sm:justify-start">
           <button
             onClick={() => setCurrentMonth((month) => subMonths(month, 1))}
             className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
@@ -62,8 +68,51 @@ export function CalendarView() {
           </button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-7 gap-px bg-white/10 rounded-xl overflow-hidden border border-white/10">
+      <CardContent className="px-3 pb-4 sm:px-6 sm:pb-6">
+        <div className="space-y-4 md:hidden">
+          {mobileDays.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-white/15 bg-black/20 px-4 py-10 text-center text-sm text-slate-500">
+              Nenhuma tarefa agendada neste mês.
+            </div>
+          ) : mobileDays.map(({ day, dayTasks }) => (
+            <section key={day.toISOString()} className="overflow-hidden rounded-xl border border-white/10 bg-black/20">
+              <div className={`flex items-center justify-between border-b border-white/5 px-3 py-2.5 ${isSameDay(day, today) ? 'bg-primary/10' : 'bg-white/[0.03]'}`}>
+                <h3 className="text-sm font-bold capitalize text-white">{format(day, "EEEE, d 'de' MMMM", { locale: ptBR })}</h3>
+                {isSameDay(day, today) && <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-slate-900">Hoje</span>}
+              </div>
+              <div className="space-y-2 p-2.5">
+                {dayTasks.map((task) => (
+                  <article key={task.id} className="rounded-lg border border-white/10 bg-slate-950/55 p-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="break-words text-sm font-semibold leading-snug text-white">{task.title}</p>
+                        <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-400">
+                          {task.startTime && <span>{task.startTime}{task.endTime ? `–${task.endTime}` : ''}</span>}
+                          <span>{STATUS_LABEL[task.status]}</span>
+                          <span>{task.pomodorosDone}/{task.pomodorosEstimated} pomodoros</span>
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 gap-1">
+                        {task.status !== 'IN_PROGRESS' && task.status !== 'DONE' && (
+                          <button onClick={() => moveTaskStatus(task.id, 'IN_PROGRESS')} className="rounded-lg border border-white/10 p-2 text-slate-400 active:bg-white/10 active:text-primary" aria-label="Mover para em andamento">
+                            <Play className="h-4 w-4" />
+                          </button>
+                        )}
+                        {task.status !== 'DONE' && (
+                          <button onClick={() => moveTaskStatus(task.id, 'DONE')} className="rounded-lg border border-white/10 p-2 text-slate-400 active:bg-white/10 active:text-green-400" aria-label="Concluir tarefa">
+                            <CheckCircle2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <div className="hidden grid-cols-7 gap-px bg-white/10 rounded-xl overflow-hidden border border-white/10 md:grid">
           {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(day => (
             <div key={day} className="bg-black/40 p-3 text-center text-sm font-bold text-slate-400 border-b border-white/5 uppercase tracking-wider">
               {day}
@@ -126,7 +175,7 @@ export function CalendarView() {
       {hoveredTask && (
         <div
           role="tooltip"
-          className="pointer-events-none fixed z-50 w-64 -translate-x-1/2 -translate-y-[calc(100%+10px)] rounded-xl border border-white/[0.12] bg-slate-950/95 p-3 text-left shadow-[0_18px_45px_rgba(0,0,0,0.55)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+          className="pointer-events-none fixed z-50 hidden w-64 -translate-x-1/2 -translate-y-[calc(100%+10px)] rounded-xl border border-white/[0.12] bg-slate-950/95 p-3 text-left shadow-[0_18px_45px_rgba(0,0,0,0.55)] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150 md:block"
           style={{ left: hoveredTask.x, top: hoveredTask.y }}
         >
           <p className="pr-2 text-sm font-bold leading-snug text-white">{hoveredTask.task.title}</p>

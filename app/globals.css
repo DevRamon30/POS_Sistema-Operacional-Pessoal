@@ -62,6 +62,10 @@
       hsl(var(--background));
     background-attachment: fixed;
   }
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
   body::before {
     content: "";
     @apply fixed inset-0 bg-noise;
